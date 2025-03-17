@@ -35,15 +35,17 @@ public class Calculator
 		                       };
 		for(String label : buttonLabels) {
 			JButton button = new JButton(label);
-			button.setBackground(Color.LIGHT_GRAY);
+			
 			button.addActionListener(e-> {
 				String currenttext = display.getText();
 				
 				if(label.equals("=")) {
 					
-					display.setText(" ");
+					display.setText(String.valueOf(evaluateExpression(display.getText())));
 				}
-				
+				else if(label.equals("C")) {
+					display.setText("");
+				}
 				else {
 					display.setText(currenttext+label);
 					
@@ -51,22 +53,72 @@ public class Calculator
 			});
 			
 			panel.add(button);
+			button.setOpaque(true);
+			button.setBorderPainted(false);
+			button.setFocusPainted(false);
+			button.setBackground(Color.LIGHT_GRAY); // Set base color only once
+
+            
+			button.addMouseListener(new java.awt.event.MouseAdapter() {
+			    public void mouseEntered(java.awt.event.MouseEvent evt) {
+			        button.setBackground(Color.DARK_GRAY);
+			    }
+
+			    public void mouseExited(java.awt.event.MouseEvent evt) {
+			        button.setBackground(Color.LIGHT_GRAY);
+			    }
+
+			    public void mousePressed(java.awt.event.MouseEvent evt) {
+			        button.setBackground(Color.GRAY); // Temporary click color
+			    }
+
+			    public void mouseReleased(java.awt.event.MouseEvent evt) {
+			        button.setBackground(Color.LIGHT_GRAY); // Restore after release
+			    }
+			});
+
+
 		}
+		
+		
 		
 		frame.add(display);
 		frame.add(panel);
        
 	}
 	
-	String Calculation(String Calc){
-		String answer = Calc;
-		
-		for(int i = 0;i<Calc.length(); i++) {
-			
-		}
-		
-		return answer;
-	}
+	static int evaluateExpression(String expression) {
+        int result = 0;
+        int num = 0;
+        char lastOperator = '+'; // Assume first operation is addition
+
+        for (int i = 0; i < expression.length(); i++) {
+            char ch = expression.charAt(i);
+
+            if (Character.isDigit(ch)) {
+                num = num * 10 + (ch - '0'); // Build the number
+            }
+
+            if (!Character.isDigit(ch) || i == expression.length() - 1) {
+                // Perform the previous operation
+                if (lastOperator == '+') {
+                    result += num;
+                } else if (lastOperator == '-') {
+                    result -= num;
+                } else if (lastOperator == '*') {
+                    result *= num;
+                } else if (lastOperator == '/') {
+                    result /= num;
+                }
+
+                // Reset num and store new operator
+                num = 0;
+                lastOperator = ch;
+            }
+        }
+
+        return result;
+    }
 	
 
 }
